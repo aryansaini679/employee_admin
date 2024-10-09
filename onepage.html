@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Employee Dashboard</title>
+    <link rel="stylesheet" href="application.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Admin Employee Dashboard</h1>
+        </div>
+        <div class="login-form" id="login-form">
+            <h2>Login</h2>
+            <form>
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username"><br><br>
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password"><br><br>
+                <input type="button" id="login" value="Login">
+            </form>
+        </div>
+        <div class="admin-dashboard" id="admin-dashboard" style="display: none;">
+            <h2>Admin Dashboard</h2>
+            <div class="employee-list">
+                <h3>Employees:</h3>
+                <select id="employees">
+                    <!-- employee list will be populated here -->
+                </select>
+            </div>
+            <div class="task-list">
+                <h3>Tasks:</h3>
+                <ul id="tasks">
+                    <!-- task list will be populated here -->
+                </ul>
+                <input type="text" id="task-input" placeholder="Enter task">
+                <input type="button" id="add-task" value="Add Task">
+            </div>
+        </div>
+        <div class="employee-dashboard" id="employee-dashboard" style="display: none;">
+            <h2>Employee Dashboard</h2>
+            <div class="task-list">
+                <h3>Assigned Tasks:</h3>
+                <ul id="employee-tasks">
+                    <!-- assigned tasks will be populated here -->
+                </ul>
+                <input type="button" id="mark-complete" value="Mark Complete">
+            </div>
+        </div>
+    </div>
+    <script>
+        // script.js
+
+// Admin and employee credentials
+const adminUsername = "admin";
+const adminPassword = "admin@123";
+let employees = [
+    { username: "employee1", password: "password1", tasks: [] },
+    { username: "employee2", password: "password2", tasks: [] },
+];
+
+// Assign task function for admin
+function assignTasks() {
+    const taskInput = document.getElementById("task-input").value;
+    const employeeList = document.getElementById("employees");
+    const selectedEmployee = employeeList.options[employeeList.selectedIndex].value;
+    const employee = employees.find((emp) => emp.username === selectedEmployee);
+
+    if (employee && taskInput) {
+        employee.tasks.push(taskInput);
+        updateTaskList(taskInput);
+        document.getElementById("task-input").value = ""; // Clear input
+    } else {
+        alert("Please enter a valid task.");
+    }
+}
+
+// Display tasks for the selected employee in admin dashboard
+function updateTaskList(task) {
+    const taskList = document.getElementById("tasks");
+    taskList.innerHTML += <li>${task}</li>;
+}
+
+// Display tasks for logged-in employee
+function displayEmployeeTasks() {
+    const employeeTasks = document.getElementById("employee-tasks");
+    const username = document.getElementById("username").value;
+    const employee = employees.find((emp) => emp.username === username);
+
+    if (employee) {
+        employeeTasks.innerHTML = ""; // Clear task list
+        employee.tasks.forEach((task) => {
+            employeeTasks.innerHTML += <li>${task}</li>;
+        });
+    }
+}
+
+// Handle login functionality
+function handleLogin() {
+    const username = document.getElementById("username").value;
+    const password = document.getElementById("password").value;
+
+    const adminDashboard = document.getElementById("admin-dashboard");
+    const employeeDashboard = document.getElementById("employee-dashboard");
+    const loginForm = document.getElementById("login-form");
+
+    // Admin login
+    if (username === adminUsername && password === adminPassword) {
+        adminDashboard.style.display = "block";
+        loginForm.style.display = "none";
+
+        // Populate employee list
+        const employeeSelect = document.getElementById("employees");
+        employees.forEach((employee) => {
+            const option = document.createElement("option");
+            option.value = employee.username;
+            option.text = employee.username;
+            employeeSelect.appendChild(option);
+        });
+
+    } else {
+        // Employee login
+        const employee = employees.find(
+            (emp) => emp.username === username && emp.password === password
+        );
+        if (employee) {
+            employeeDashboard.style.display = "block";
+            loginForm.style.display = "none";
+
+            // Display tasks for employee
+            displayEmployeeTasks();
+        } else {
+            alert("Invalid username or password");
+        }
+    }
+}
+
+// Add event listeners
+document.getElementById("login").addEventListener("click", handleLogin);
+document.getElementById("add-task").addEventListener("click", assignTasks);
+
+    </script>
+</body>
+</html>
